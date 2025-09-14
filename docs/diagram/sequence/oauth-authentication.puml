@@ -1,0 +1,35 @@
+@startuml
+title OAuth 인증 시퀀스 다이어그램
+
+actor User
+boundary Browser
+control AuthController
+entity UserService
+entity PointService
+entity SmsService
+database DB
+entity OAuthProvider
+
+User -> Browser : 소셜 로그인 선택
+Browser -> AuthController : GET /oauth/{provider}/login
+AuthController -> OAuthProvider : 인증 요청
+OAuthProvider --> Browser : 인증 페이지 리다이렉트
+User -> OAuthProvider : 로그인 정보 입력
+OAuthProvider -> AuthController : 인증 코드 전달
+AuthController -> OAuthProvider : 액세스 토큰 요청
+AuthController -> OAuthProvider : 사용자 정보 요청
+AuthController -> UserService : findByEmail(email)
+alt 기존 회원인 경우
+    UserService --> AuthController : 기존 사용자
+    AuthController --> Browser : 메인페이지 리다이렉트
+else 신규 회원인 경우
+    alt 전화번호 정보 있는 경우
+        AuthController -> UserService : createUser(oauthInfo)
+        UserService -> PointService : grantWelcomePoints(userId, 5000)
+        AuthController --> Browser : 회원가입 완료
+    else 전화번호 정보 없는 경우
+        AuthController --> Browser : 전화번호 입력 페이지
+    end
+end
+
+@enduml

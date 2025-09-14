@@ -1,0 +1,50 @@
+@startuml
+title 장바구니 관리 시스템 클래스 다이어그램
+
+class ShoppingCart {
+  - cartId: Long
+  - userId: Long
+  - items: List<CartItem>
+  - totalAmount: BigDecimal
+  - createdAt: Date
+  + addProduct(product: Product, quantity: int, options: ProductOption)
+  + removeProduct(productId: Long)
+  + updateQuantity(productId: Long, quantity: int)
+  + clearCart()
+  + calculateTotal()
+  + validateStock()
+}
+
+class CartItem {
+  - cartItemId: Long
+  - cartId: Long
+  - productId: Long
+  - quantity: int
+  - selectedOptions: List<ProductOption>
+  - addedAt: Date
+  + calculateItemTotal()
+  + validateStock()
+}
+
+class Product {
+  - productId: Long
+  - name: String
+  - price: BigDecimal
+  - stock: int
+  + checkAvailability()
+}
+
+class ProductOption {
+  - optionId: Long
+  - productId: Long
+  - optionType: String
+  - optionValue: String
+  - additionalPrice: BigDecimal
+  - stock: int
+}
+
+ShoppingCart "1" --> "*" CartItem : contains
+CartItem "*" --> "1" Product : refers
+CartItem "*" --> "*" ProductOption : selects
+
+@enduml

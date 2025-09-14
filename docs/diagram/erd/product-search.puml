@@ -1,0 +1,26 @@
+@startuml
+title 상품 검색 ERD
+
+entity "products" as product {
+  * product_id : BIGINT AUTO_INCREMENT <<PK>>
+  * category_id : BIGINT <<FK>>
+  --
+  * name : VARCHAR(255) NOT NULL
+  * price : DECIMAL(10,2) NOT NULL
+  brand : VARCHAR(100)
+  * stock : INT NOT NULL DEFAULT 0
+  rating : DECIMAL(2,1) DEFAULT 0.0
+  sales_count : INT DEFAULT 0
+  is_active : TINYINT(1) DEFAULT 1
+}
+
+entity "categories" as category {
+  * category_id : BIGINT AUTO_INCREMENT <<PK>>
+  --
+  * name : VARCHAR(100) NOT NULL
+  parent_category_id : BIGINT
+}
+
+product }o--|| category : belongs_to
+
+@enduml

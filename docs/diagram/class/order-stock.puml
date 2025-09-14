@@ -1,0 +1,59 @@
+@startuml
+title 주문 및 재고 관리 시스템 클래스 다이어그램
+
+class Order {
+  - orderId: Long
+  - userId: Long
+  - orderDate: Date
+  - status: OrderStatus
+  - totalAmount: BigDecimal
+  - shippingFee: BigDecimal
+  - discountAmount: BigDecimal
+  - pointsUsed: int
+  + placeOrder()
+  + validateStock()
+  + calculateTotal()
+  + processPayment()
+}
+
+class StockService {
+  + checkStock(productId: Long, quantity: int)
+  + reserveStock(productId: Long, quantity: int)
+  + restoreStock(productId: Long, quantity: int)
+  + recordStockChange(productId: Long, changeType: StockChangeType, quantity: int)
+}
+
+class StockHistory {
+  - historyId: Long
+  - productId: Long
+  - orderId: Long
+  - changeType: StockChangeType
+  - quantity: int
+  - stockBefore: int
+  - stockAfter: int
+  - reason: String
+  - changedAt: Date
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum StockChangeType {
+  ORDER
+  CANCEL
+  REFUND
+  ADJUSTMENT
+}
+
+Order --> OrderStatus
+StockService --> StockHistory
+StockHistory --> StockChangeType
+
+@enduml

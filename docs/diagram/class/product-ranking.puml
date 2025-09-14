@@ -1,0 +1,49 @@
+@startuml
+title 상품 랭킹 시스템 클래스 다이어그램
+
+class ProductRanking {
+  - rankingId: Long
+  - productId: Long
+  - rankingType: RankingType
+  - rank: int
+  - score: double
+  - calculatedAt: Date
+  + calculateSalesRanking()
+  + calculateReviewRanking()
+  + updateRanking()
+}
+
+class EventProduct {
+  - eventId: Long
+  - productId: Long
+  - eventName: String
+  - discountRate: int
+  - eventStartDate: Date
+  - eventEndDate: Date
+  - isActive: boolean
+  + validateEventPeriod()
+  + calculateEventPrice()
+}
+
+class Product {
+  - productId: Long
+  - name: String
+  - price: BigDecimal
+  - discountRate: int
+  - salesCount: int
+  - reviewCount: int
+  - rating: double
+  - stock: int
+}
+
+enum RankingType {
+  SALES_RANKING
+  REVIEW_RANKING
+  DISCOUNT_RANKING
+}
+
+Product "1" --> "0..1" ProductRanking : ranked
+Product "1" --> "0..1" EventProduct : featured
+ProductRanking --> RankingType
+
+@enduml

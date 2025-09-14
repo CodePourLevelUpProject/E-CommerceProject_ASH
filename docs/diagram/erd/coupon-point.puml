@@ -1,0 +1,41 @@
+@startuml
+title 쿠폰 및 포인트 시스템 ERD
+
+entity "coupons" as coupon {
+  * coupon_id : BIGINT AUTO_INCREMENT <<PK>>
+  user_id : BIGINT <<FK>>
+  admin_id : BIGINT <<FK>>
+  --
+  * code : VARCHAR(50) UNIQUE NOT NULL
+  * discount_rate : DECIMAL(5,2) NOT NULL
+  discount_amount : DECIMAL(10,2)
+  min_order_amount : DECIMAL(10,2) DEFAULT 0.00
+  max_discount_amount : DECIMAL(10,2)
+  * status : ENUM('ACTIVE', 'USED', 'EXPIRED', 'CANCELLED') DEFAULT 'ACTIVE'
+  usage_limit : INT DEFAULT 1
+  used_count : INT DEFAULT 0
+  expired_at : TIMESTAMP
+  created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "points" as point {
+  * point_id : BIGINT AUTO_INCREMENT <<PK>>
+  * user_id : BIGINT <<FK>>
+  --
+  * balance : INT NOT NULL DEFAULT 0
+  updated_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "point_histories" as point_history {
+  * history_id : BIGINT AUTO_INCREMENT <<PK>>
+  * user_id : BIGINT <<FK>>
+  --
+  * amount : INT NOT NULL
+  * type : ENUM('CHARGE', 'USE') NOT NULL
+  description : VARCHAR(255)
+  created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+point ||--o{ point_history : logs
+
+@enduml

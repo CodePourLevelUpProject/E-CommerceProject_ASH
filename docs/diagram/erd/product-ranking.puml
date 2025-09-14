@@ -1,0 +1,36 @@
+@startuml
+title 상품 랭킹 시스템 ERD
+
+entity "product_rankings" as product_ranking {
+  * ranking_id : BIGINT AUTO_INCREMENT <<PK>>
+  * product_id : BIGINT <<FK>>
+  --
+  * ranking_type : ENUM('SALES', 'REVIEW', 'DISCOUNT') NOT NULL
+  * rank_position : INT NOT NULL
+  score : DECIMAL(10,2) NOT NULL
+  calculated_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "event_products" as event_product {
+  * event_id : BIGINT AUTO_INCREMENT <<PK>>
+  * product_id : BIGINT <<FK>>
+  --
+  * event_name : VARCHAR(255) NOT NULL
+  * discount_rate : INT NOT NULL
+  event_start_date : TIMESTAMP NOT NULL
+  event_end_date : TIMESTAMP NOT NULL
+  is_active : TINYINT(1) DEFAULT 1
+}
+
+entity "products" as product {
+  * product_id : BIGINT AUTO_INCREMENT <<PK>>
+  --
+  sales_count : INT DEFAULT 0
+  review_count : INT DEFAULT 0
+  rating : DECIMAL(2,1) DEFAULT 0.0
+}
+
+product ||--o{ product_ranking : ranked
+product ||--o{ event_product : featured
+
+@enduml
