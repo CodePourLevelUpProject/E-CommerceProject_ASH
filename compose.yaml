@@ -1,0 +1,10 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=ecommerce'
+      - 'MYSQL_PASSWORD=ecommerce'
+      - 'MYSQL_ROOT_PASSWORD=ecommerce'
+      - 'MYSQL_USER=ecommerce'
+    ports:
+      - '3306'
