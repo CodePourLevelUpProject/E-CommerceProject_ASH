@@ -1,0 +1,249 @@
+@startuml DDD Domain Model
+
+!define AGGREGATE_ROOT class
+!define ENTITY class
+!define VALUE_OBJECT class
+
+title E-Commerce DDD Domain Model
+
+package "User Management Context" {
+  AGGREGATE_ROOT User {
+    - UserId id
+    - Email email
+    - UserProfile profile
+    - List<Address> addresses
+    + register()
+    + updateProfile()
+    + addAddress()
+  }
+  
+  ENTITY UserProfile {
+    - String name
+    - PhoneNumber phoneNumber
+    - Date birthDate
+  }
+  
+  VALUE_OBJECT Email {
+    - String value
+    + validate()
+  }
+  
+  VALUE_OBJECT PhoneNumber {
+    - String value
+    + validate()
+  }
+  
+  VALUE_OBJECT Address {
+    - String zipCode
+    - String address1
+    - String address2
+    + isValid()
+  }
+}
+
+package "Product Management Context" {
+  AGGREGATE_ROOT Product {
+    - ProductId id
+    - String name
+    - String description
+    - Price price
+    - Stock stock
+    - Category category
+    - List<ProductOption> options
+    + updatePrice()
+    + adjustStock()
+    + addOption()
+  }
+  
+  ENTITY ProductOption {
+    - String name
+    - String value
+    - Price additionalPrice
+  }
+  
+  VALUE_OBJECT Price {
+    - BigDecimal amount
+    - Currency currency
+    + add()
+    + multiply()
+  }
+  
+  VALUE_OBJECT Stock {
+    - int quantity
+    + decrease()
+    + increase()
+    + isAvailable()
+  }
+  
+  VALUE_OBJECT Category {
+    - String name
+    - String path
+  }
+}
+
+package "Order Management Context" {
+  AGGREGATE_ROOT Order {
+    - OrderId id
+    - UserId userId
+    - List<OrderItem> items
+    - OrderStatus status
+    - DeliveryInfo deliveryInfo
+    - Money totalAmount
+    + addItem()
+    + removeItem()
+    + confirm()
+    + cancel()
+  }
+  
+  ENTITY OrderItem {
+    - ProductId productId
+    - String productName
+    - Quantity quantity
+    - Price unitPrice
+    + calculateAmount()
+  }
+  
+  AGGREGATE_ROOT Cart {
+    - CartId id
+    - UserId userId
+    - List<CartItem> items
+    + addItem()
+    + removeItem()
+    + clear()
+    + toOrder()
+  }
+  
+  ENTITY CartItem {
+    - ProductId productId
+    - Quantity quantity
+    - Date addedAt
+  }
+  
+  VALUE_OBJECT OrderStatus {
+    - String value
+    + isChangeable()
+  }
+  
+  VALUE_OBJECT DeliveryInfo {
+    - Address address
+    - String recipientName
+    - PhoneNumber recipientPhone
+  }
+  
+  VALUE_OBJECT Money {
+    - BigDecimal amount
+    - Currency currency
+    + add()
+    + subtract()
+  }
+  
+  VALUE_OBJECT Quantity {
+    - int value
+    + add()
+    + subtract()
+  }
+}
+
+package "Payment Context" {
+  AGGREGATE_ROOT Payment {
+    - PaymentId id
+    - OrderId orderId
+    - PaymentMethod method
+    - Amount amount
+    - PaymentStatus status
+    + process()
+    + cancel()
+    + refund()
+  }
+  
+  VALUE_OBJECT PaymentMethod {
+    - String type
+    - String details
+  }
+  
+  VALUE_OBJECT PaymentStatus {
+    - String value
+    + isPaid()
+    + isCancelled()
+  }
+  
+  VALUE_OBJECT Amount {
+    - BigDecimal value
+    - Currency currency
+  }
+}
+
+package "Marketing Context" {
+  AGGREGATE_ROOT Coupon {
+    - CouponId id
+    - String name
+    - CouponPolicy policy
+    - DiscountAmount discount
+    - ValidityPeriod validity
+    - int usageLimit
+    - int usedCount
+    + isUsable()
+    + use()
+    + calculateDiscount()
+  }
+  
+  AGGREGATE_ROOT Point {
+    - PointId id
+    - UserId userId
+    - PointAmount balance
+    - List<PointHistory> histories
+    + earn()
+    + use()
+    + getBalance()
+  }
+  
+  ENTITY PointHistory {
+    - PointAmount amount
+    - String reason
+    - Date createdAt
+  }
+  
+  VALUE_OBJECT CouponPolicy {
+    - BigDecimal minOrderAmount
+    - String applicableCategory
+  }
+  
+  VALUE_OBJECT DiscountAmount {
+    - BigDecimal amount
+    - String type
+    + calculate()
+  }
+  
+  VALUE_OBJECT ValidityPeriod {
+    - Date startDate
+    - Date endDate
+    + isValid()
+  }
+  
+  VALUE_OBJECT PointAmount {
+    - int value
+    + add()
+    + subtract()
+  }
+}
+
+' Relationships
+User ||--o{ Address
+User ||--|| UserProfile
+Product ||--o{ ProductOption
+Order ||--o{ OrderItem
+Cart ||--o{ CartItem
+Point ||--o{ PointHistory
+
+' Domain Events
+class OrderCreated <<Domain Event>>
+class PaymentCompleted <<Domain Event>>
+class CouponUsed <<Domain Event>>
+class PointEarned <<Domain Event>>
+
+Order ..> OrderCreated : publishes
+Payment ..> PaymentCompleted : publishes
+Coupon ..> CouponUsed : publishes
+Point ..> PointEarned : publishes
+
+@enduml

@@ -22,12 +22,14 @@
 - **Redis 캐시** 적용 (TTL 1시간)
 - **인덱스 최적화** (name, brand, category_id)
 
-### Phase 2: Elasticsearch 도입 (확장 - 6개월 후)
-- **전문 검색 엔진** 활용
+### Phase 2: Elasticsearch 도입 (현재 적용)
+- **전문 검색 엔진** 활용 (Elasticsearch 8.x)
 - **한글 형태소 분석기** (nori) 적용
 - **동의어, 유사어** 처리
 - **검색 결과 랭킹** 알고리즘
 - **자동완성, 추천 검색어** 기능
+- **실시간 인덱싱** (Logstash 연동)
+- **검색 분석** (Kibana 대시보드)
 
 ### 관련 다이어그램
 
