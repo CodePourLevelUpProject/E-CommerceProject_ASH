@@ -1,0 +1,26 @@
+@startuml
+title 상품 카테고리 구조 ERD
+
+entity "categories" as category {
+  * category_id : BIGINT AUTO_INCREMENT <<PK>>
+  --
+  * name : VARCHAR(100) NOT NULL
+  parent_category_id : BIGINT
+  product_count : INT DEFAULT 0
+  is_active : TINYINT(1) DEFAULT 1
+  created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+entity "products" as product {
+  * product_id : BIGINT AUTO_INCREMENT <<PK>>
+  * category_id : BIGINT <<FK>>
+  --
+  * name : VARCHAR(255) NOT NULL
+  * stock : INT NOT NULL DEFAULT 0
+  is_active : TINYINT(1) DEFAULT 1
+}
+
+category ||--o{ category : has_subcategories
+category ||--o{ product : contains
+
+@enduml

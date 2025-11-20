@@ -1,0 +1,42 @@
+@startuml
+title 주문 및 재고 관리 시스템 ERD
+
+entity "orders" as orders {
+  * order_id : BIGINT AUTO_INCREMENT <<PK>>
+  * user_id : BIGINT <<FK>>
+  * address_id : BIGINT <<FK>>
+  --
+  * order_date : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  * status : ENUM('PENDING', 'PAID', 'PREPARING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED')
+  * total_amount : DECIMAL(10,2) NOT NULL
+  shipping_fee : DECIMAL(8,2) DEFAULT 0.00
+  discount_amount : DECIMAL(10,2) DEFAULT 0.00
+  points_used : INT DEFAULT 0
+}
+
+entity "order_items" as order_item {
+  * order_item_id : BIGINT AUTO_INCREMENT <<PK>>
+  * order_id : BIGINT <<FK>>
+  * product_id : BIGINT <<FK>>
+  --
+  * quantity : INT NOT NULL
+  * price : DECIMAL(10,2) NOT NULL
+}
+
+entity "stock_histories" as stock_history {
+  * history_id : BIGINT AUTO_INCREMENT <<PK>>
+  * product_id : BIGINT <<FK>>
+  order_id : BIGINT <<FK>>
+  --
+  * change_type : ENUM('ORDER', 'CANCEL', 'REFUND', 'ADJUSTMENT') NOT NULL
+  * quantity_change : INT NOT NULL
+  * stock_before : INT NOT NULL
+  * stock_after : INT NOT NULL
+  reason : VARCHAR(255)
+  created_at : TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+}
+
+orders ||--o{ order_item : includes
+orders ||--o{ stock_history : affects
+
+@enduml

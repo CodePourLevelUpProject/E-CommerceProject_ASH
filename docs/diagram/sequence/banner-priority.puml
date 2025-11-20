@@ -1,0 +1,20 @@
+@startuml
+title 광고 배너 우선순위 시스템 시퀀스 다이어그램
+
+participant BannerService
+database DB
+
+BannerService -> DB : SELECT * FROM banners\nWHERE is_active = true\nAND start_date <= NOW()\nAND end_date >= NOW()
+DB --> BannerService : 활성 배너 목록
+
+loop 각 배너별로
+    BannerService -> DB : SELECT click_count, view_count\nFROM banners WHERE banner_id = ?
+    DB --> BannerService : 클릭/조회 수
+    BannerService -> BannerService : calculatePriorityScore(advertisingCost, clickRate)
+    BannerService -> DB : UPDATE banners\nSET priority = ? WHERE banner_id = ?
+end
+
+BannerService -> DB : SELECT * FROM banners\nWHERE is_active = true\nORDER BY priority DESC LIMIT 5
+DB --> BannerService : 상위 5개 배너
+
+@enduml

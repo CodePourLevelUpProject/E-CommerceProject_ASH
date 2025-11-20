@@ -1,0 +1,40 @@
+@startuml
+'https://plantuml.com/class-diagram
+title OAuth 인증 시스템 클래스 다이어그램
+
+class User {
+  - userId: Long
+  - mail: String
+  - password: String
+  - name: String
+  - phoneNumber: String
+  - oauthProvider: String
+  - oauthId: String
+  - isPhoneVerified: boolean
+  - createdAt: Date
+  + oauthLogin(provider: String)
+  + verifyPhone(code: String)
+}
+
+class PhoneVerification {
+  - verificationId: Long
+  - phoneNumber: String
+  - verificationCode: String
+  - isVerified: boolean
+  - expiryTime: Date
+  - attemptCount: int
+  + sendVerificationCode()
+  + verifyCode(code: String)
+}
+
+class Point {
+  - pointId: Long
+  - userId: Long
+  - balance: int
+  + charge(amount: int, reason: String)
+}
+
+User "1" --> "*" PhoneVerification : requests
+User "1" --> "1" Point : has
+
+@enduml

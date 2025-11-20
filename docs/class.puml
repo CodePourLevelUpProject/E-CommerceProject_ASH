@@ -1,0 +1,356 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class User {
+  - userId: Long
+  - mail: String
+  - password: String
+  - name: String
+  - phoneNumber: String
+  - oauthProvider: String
+  - oauthId: String
+  - isPhoneVerified: boolean
+  - createdAt: Date
+  + register()
+  + login()
+  + oauthLogin(provider: String)
+  + verifyPhone(code: String)
+  + updateProfile()
+  + resetPassword()
+}
+
+class Address {
+  - addressId: String
+  - recipientName: String
+  - phoneNumber: String
+  - address: String
+  - isDefault: boolean
+  + addAddress()
+  + updateAddress()
+  + deleteAddress()
+}
+
+class ShoppingCart {
+  - cartId: Long
+  - userId: Long
+  - items: List<CartItem>
+  - totalAmount: BigDecimal
+  - createdAt: Date
+  + addProduct(product: Product, quantity: int, options: ProductOption)
+  + removeProduct(productId: Long)
+  + updateQuantity(productId: Long, quantity: int)
+  + clearCart()
+  + calculateTotal()
+  + validateStock()
+  + viewCart()
+}
+
+class Product {
+  - productId: Long
+  - code: String
+  - name: String
+  - price: BigDecimal
+  - discountRate: int
+  - brand: String
+  - description: String
+  - stock: int
+  - rating: double
+  - reviewCount: int
+  - salesCount: int
+  - imageUrl: String
+  - thumbnailUrls: List<String>
+  - isActive: boolean
+  - createdAt: Date
+  + viewProduct()
+  + viewDetail()
+  + searchProduct(keyword: String)
+  + filterProduct(filters: Map)
+  + calculateDiscountPrice()
+  + updateStock(quantity: int)
+  + checkAvailability()
+}
+
+class Category {
+  - categoryId: String
+  - name: String
+  - parentCategory: String
+  + viewByCategory()
+  + manageCategory()
+}
+
+class Review {
+  - reviewId: String
+  - rating: int
+  - content: String
+  - imageUrl: String
+  - reviewDate: Date
+  + writeReview()
+  + viewReview()
+  + deleteReview()
+}
+
+class Point {
+  - pointId: Long
+  - userId: Long
+  - balance: int
+  - totalEarned: int
+  - totalUsed: int
+  + charge(amount: int, reason: String)
+  + use(amount: int, reason: String)
+  + validateUsage(amount: int, orderAmount: BigDecimal)
+  + getBalance()
+  + viewHistory()
+  + calculateUsageLimit(orderAmount: BigDecimal)
+}
+
+class Coupon {
+  - couponId: Long
+  - code: String
+  - discountRate: double
+  - discountAmount: BigDecimal
+  - minOrderAmount: BigDecimal
+  - maxDiscountAmount: BigDecimal
+  - status: CouponStatus
+  - expiryDate: Date
+  - usageLimit: int
+  - usedCount: int
+  + issue()
+  + register()
+  + validateUsage(orderAmount: BigDecimal)
+  + calculateDiscount(orderAmount: BigDecimal)
+  + use()
+  + viewCoupon()
+}
+
+class Notification {
+  - message: String
+  - type: String
+  + send()
+  + view()
+}
+
+class Board {
+  - title: String
+  - content: String
+  + createPost()
+  + viewPost()
+  + managePost()
+}
+
+class Order {
+  - orderId: Long
+  - userId: Long
+  - orderDate: Date
+  - status: OrderStatus
+  - totalAmount: BigDecimal
+  - shippingFee: BigDecimal
+  - discountAmount: BigDecimal
+  - pointsUsed: int
+  - couponId: Long
+  + placeOrder()
+  + validateStock()
+  + calculateTotal()
+  + applyDiscount(coupon: Coupon, points: int)
+  + processPayment()
+  + viewOrder()
+  + cancelOrder()
+  + refundOrder()
+}
+
+class Delivery {
+  - trackingNumber: String
+  - status: String
+  - estimatedDate: Date
+  - actualDate: Date
+  + trackDelivery()
+  + updateStatus()
+}
+
+class Admin {
+  - adminId: String
+  - permissions: List<String>
+  + manageCoupon()
+  + manageNotice()
+  + manageBanner()
+  + manageBoard()
+}
+
+class Banner {
+  - bannerId: Long
+  - title: String
+  - imageUrl: String
+  - linkUrl: String
+  - priority: int
+  - advertisingCost: BigDecimal
+  - clickCount: int
+  - viewCount: int
+  - isActive: boolean
+  - startDate: Date
+  - endDate: Date
+  + createBanner()
+  + updateBanner()
+  + deleteBanner()
+  + calculatePriorityScore()
+  + trackClick()
+  + trackView()
+  + checkExpiry()
+}
+
+class Notice {
+  - noticeId: String
+  - title: String
+  - content: String
+  - createDate: Date
+  + createNotice()
+  + updateNotice()
+  + deleteNotice()
+}
+
+class Payment {
+  - paymentId: String
+  - amount: int
+  - method: String
+  + pay()
+  + refund()
+}
+
+class ProductOption {
+  - optionId: Long
+  - productId: Long
+  - optionType: String
+  - optionValue: String
+  - additionalPrice: BigDecimal
+  - stock: int
+  + validateCombination(options: List<ProductOption>)
+  + updateStock(quantity: int)
+}
+
+class CartItem {
+  - cartItemId: Long
+  - cartId: Long
+  - productId: Long
+  - quantity: int
+  - selectedOptions: List<ProductOption>
+  - addedAt: Date
+  + calculateItemTotal()
+  + validateStock()
+}
+
+class ProductRanking {
+  - rankingId: Long
+  - productId: Long
+  - rankingType: RankingType
+  - rank: int
+  - score: double
+  - calculatedAt: Date
+  + calculateSalesRanking()
+  + calculateReviewRanking()
+  + updateRanking()
+}
+
+class EventProduct {
+  - eventId: Long
+  - productId: Long
+  - discountRate: int
+  - eventStartDate: Date
+  - eventEndDate: Date
+  - isActive: boolean
+  + validateEventPeriod()
+  + calculateEventPrice()
+  + checkStock()
+}
+
+class PhoneVerification {
+  - verificationId: Long
+  - phoneNumber: String
+  - verificationCode: String
+  - isVerified: boolean
+  - expiryTime: Date
+  - attemptCount: int
+  + sendVerificationCode()
+  + verifyCode(code: String)
+  + checkExpiry()
+  + incrementAttempt()
+}
+
+
+
+class StockHistory {
+  - historyId: Long
+  - productId: Long
+  - changeType: StockChangeType
+  - quantity: int
+  - reason: String
+  - changedAt: Date
+  + recordStockChange()
+  + getStockHistory()
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum CouponStatus {
+  ACTIVE
+  USED
+  EXPIRED
+  CANCELLED
+}
+
+enum RankingType {
+  SALES_RANKING
+  REVIEW_RANKING
+  DISCOUNT_RANKING
+}
+
+enum StockChangeType {
+  ORDER
+  CANCEL
+  REFUND
+  ADJUSTMENT
+}
+
+' ======================
+' Relationships
+' ======================
+
+User "1" --> "1" ShoppingCart : owns
+User "1" --> "*" Address : has
+User "1" --> "1" Point : has
+User "1" --> "*" PhoneVerification : requests
+
+ShoppingCart "1" --> "*" CartItem : contains
+CartItem "*" --> "1" Product : refers
+CartItem "*" --> "*" ProductOption : selects
+
+Product "*" --> "1" Category : belongs to
+Product "1" --> "*" ProductOption : has
+Product "1" --> "*" Review : has
+Product "1" --> "*" StockHistory : tracks
+Product "1" --> "0..1" ProductRanking : ranked
+Product "1" --> "0..1" EventProduct : featured
+
+User "1" --> "*" Review : writes
+User "1" --> "*" Order : places
+Order "1" --> "*" CartItem : includes
+Order "1" --> "1" Address : ships to
+Order "1" --> "1" Delivery : tracked by
+Order "1" --> "1" Payment : paid by
+Order "*" --> "0..1" Coupon : uses
+
+User "1" --> "*" Coupon : has
+User "1" --> "*" Notification : receives
+User "1" --> "*" Board : writes
+
+Admin "1" --> "*" Banner : manages
+Admin "1" --> "*" Notice : manages
+Admin "1" --> "*" Coupon : creates
+Admin "1" --> "*" EventProduct : manages
+
+@enduml

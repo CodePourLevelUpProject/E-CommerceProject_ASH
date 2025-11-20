@@ -1,0 +1,142 @@
+@startuml E-Commerce System Architecture
+
+!define RECTANGLE class
+
+title E-Commerce Platform Architecture
+
+package "Client Layer" {
+  [Web Browser] as browser
+  [Mobile App] as mobile
+}
+
+package "Load Balancer" {
+  [Nginx] as nginx
+}
+
+package "API Gateway" {
+  [Spring Cloud Gateway] as gateway
+}
+
+package "Application Layer" {
+  package "User Management" {
+    [User Service] as userService
+    [Auth Service] as authService
+  }
+  
+  package "Product Management" {
+    [Product Service] as productService
+    [Category Service] as categoryService
+  }
+  
+  package "Order Management" {
+    [Order Service] as orderService
+    [Cart Service] as cartService
+  }
+  
+  package "Payment" {
+    [Payment Service] as paymentService
+  }
+  
+  package "Marketing" {
+    [Coupon Service] as couponService
+    [Point Service] as pointService
+  }
+  
+  package "AI Chatbot" {
+    [Chatbot Service] as chatbotService
+    [Spring AI] as springAI
+  }
+}
+
+package "Infrastructure Layer" {
+  package "Database" {
+    database "MySQL Master" as mysqlMaster
+    database "MySQL Slave" as mysqlSlave
+  }
+  
+  package "Cache" {
+    database "Redis Cluster" as redis
+  }
+  
+  package "Search Engine" {
+    database "Elasticsearch" as elasticsearch
+    [Logstash] as logstash
+    [Kibana] as kibana
+  }
+  
+  package "Message Queue" {
+    [Redis Pub/Sub] as pubsub
+  }
+}
+
+package "External Services" {
+  [OpenAI API] as openai
+  [OAuth Providers] as oauth
+  [Payment Gateway] as paymentGW
+  [SMS Service] as sms
+}
+
+' Client connections
+browser --> nginx
+mobile --> nginx
+
+' Load balancer to gateway
+nginx --> gateway
+
+' Gateway to services
+gateway --> userService
+gateway --> productService
+gateway --> orderService
+gateway --> paymentService
+gateway --> couponService
+gateway --> chatbotService
+
+' Service dependencies
+userService --> authService
+orderService --> cartService
+chatbotService --> springAI
+
+' Database connections
+userService --> mysqlMaster : write
+userService --> mysqlSlave : read
+productService --> mysqlMaster : write
+productService --> mysqlSlave : read
+orderService --> mysqlMaster : write
+orderService --> mysqlSlave : read
+paymentService --> mysqlMaster : write
+couponService --> mysqlMaster : write
+pointService --> mysqlMaster : write
+
+' Cache connections
+userService --> redis : session
+cartService --> redis : cart data
+productService --> redis : product cache
+orderService --> redis : order cache
+
+' Search connections
+productService --> elasticsearch : search
+logstash --> mysqlSlave : sync
+logstash --> elasticsearch : index
+kibana --> elasticsearch : analytics
+
+' Message queue
+orderService --> pubsub : order events
+couponService --> pubsub : coupon events
+pointService --> pubsub : point events
+
+' External service connections
+springAI --> openai : AI requests
+authService --> oauth : OAuth
+paymentService --> paymentGW : payment
+authService --> sms : verification
+
+' Database replication
+mysqlMaster --> mysqlSlave : replication
+
+note right of redis : Session Store\nData Cache\nMessage Queue
+
+note right of elasticsearch : Product Search\nLog Analytics\nReal-time Indexing
+
+note right of springAI : RAG System\nVector Search\nNatural Language Processing
+
+@enduml

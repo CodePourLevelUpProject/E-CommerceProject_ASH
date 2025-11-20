@@ -1,0 +1,26 @@
+@startuml
+title 장바구니 관리 시스템 시퀀스 다이어그램
+
+actor User
+boundary Browser
+control CartController
+entity ShoppingCartService
+entity ProductService
+entity StockService
+database DB
+
+User -> Browser : 상품 장바구니 담기
+Browser -> CartController : POST /cart/add (productId, quantity, options)
+CartController -> ProductService : getProduct(productId)
+CartController -> StockService : checkStock(productId, options, quantity)
+alt 재고 충분
+    StockService --> CartController : 재고 확인 완료
+    CartController -> ShoppingCartService : addToCart(userId, productId, quantity, options)
+    ShoppingCartService -> DB : INSERT INTO cart_items
+    CartController --> Browser : 장바구니 담기 성공
+else 재고 부족
+    StockService --> CartController : 재고 부족
+    CartController --> Browser : 재고 부족 오류
+end
+
+@enduml

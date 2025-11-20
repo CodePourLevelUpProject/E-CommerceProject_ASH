@@ -1,0 +1,52 @@
+@startuml
+title 리뷰 시스템 클래스 다이어그램
+
+class Review {
+  - reviewId: Long
+  - userId: Long
+  - productId: Long
+  - orderId: Long
+  - rating: int
+  - content: String
+  - imageUrls: List<String>
+  - isVerified: boolean
+  - createdAt: Date
+  + writeReview()
+  + validatePurchase()
+  + filterContent()
+}
+
+class ReviewService {
+  + validateReviewPermission(userId: Long, productId: Long)
+  + filterInappropriateContent(content: String)
+  + calculateProductRating(productId: Long)
+  + grantReviewPoints(userId: Long)
+}
+
+class Product {
+  - productId: Long
+  - rating: double
+  - reviewCount: int
+  + updateRating()
+  + incrementReviewCount()
+}
+
+class Order {
+  - orderId: Long
+  - status: OrderStatus
+  - deliveredAt: Date
+  + isEligibleForReview()
+}
+
+class Point {
+  - userId: Long
+  - balance: int
+  + charge(amount: int, reason: String)
+}
+
+Review "*" --> "1" Product : reviews
+Review "*" --> "1" Order : based_on
+ReviewService --> Review
+ReviewService --> Point
+
+@enduml
